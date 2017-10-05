@@ -5,9 +5,10 @@ import matplotlib.pyplot as plt
 """
 
 Next:
-Try with some noise, shouldn't do anything catastrophic
-Run this with some real sensory data
-or fake spike data
+- Figure out why d-FFT values make NO sense
+- Try with some noise, shouldn't do anything catastrophic
+- Run this with some real sensory data or fake spike data
+- Update based on timing parameters of dust
 
 """
 
@@ -15,7 +16,7 @@ or fake spike data
 ##### Generate Fake PD Data #####
 # These would be TUNED
 S = 100 # Sampling rate of fft, 20 mHz
-N = 500 # Number of sample points, arbitrarily chosen
+N = 500000 # Number of sample points, arbitrarily chosen
 T = 1.0 / 1000.0 # freq of recording 1 kHz (from Syringe-injectable electronics paper)
 
 # Entire time-signal
@@ -46,47 +47,40 @@ af4 = 400
   In short, need averages to make sense no matter the function
   	>> Should be fine for voltage since spikes should be noticed either way
 """
-#y = e3 * np.sin(af1 * 2 * np.pi * x) + e4 * np.sin(af2 * 2 * np.pi * x) + e3 * np.sin(af3 * 2 * np.pi * x) + e4 * np.sin(af4 * 2 * np.pi * x)
-y = e3 * np.sin(af1 * 2 * np.pi * x) + e4 * np.sin(af2 * 2 * np.pi * x)
-#xf = np.linspace(0.0, 1.0/(2.0*T), N//2)
-
+y = e3 * np.sin(af1 * 2 * np.pi * x) + e4 * np.sin(af2 * 2 * np.pi * x) + e3 * np.sin(af3 * 2 * np.pi * x) + e4 * np.sin(af4 * 2 * np.pi * x)
+#y = e3 * np.sin(af1 * 2 * np.pi * x) + e4 * np.sin(af2 * 2 * np.pi * x)
 
 # FFT Plot Data
 y1 = [] # V's at 40 Hz
 y2 = [] # V's at 80 Hz
-#print xf[0]
+y3 = []
+y4 = []
 
 for i in range(0, N, S): # assumes N%10 == 0
-	xf = np.linspace(0.0, 1.0/(2.0*T), S//2)
-	print "i:", i
+    xf = np.linspace(0.0, 1.0/(2.0*T), S//2)
+    #print "i:", i
 
     # Fast Fourier Transform
     yf = fft(y[i:i+S])
 
-    # Get V values at 
-	# need to map xf value onto yf
-	y1.append(yf[af1]) # get V value at af1
-	y2.append(yf[af2]) # get V value at af2
-	print "yf:", yf
-	print "thing:", (2.0/S * np.abs(yf[i//2:(i+S)//2])) # <-- need to sort out why this breaks
-	print "shape", (2.0/S * np.abs(yf[i//2:(i+S)//2])).shape
-	plt.plot(xf, 2.0/S * np.abs(yf[0:S//2]))
-	plt.grid()
-	plt.show() # <--- why are readings so bad
+    # Get V values at each artificial frequency
+    # TODO: calculate these values programmatically, besides the point for now
+    y1.append(yf[6]) # get V value at af1
+    y2.append(yf[11]) # get V value at af2
+    y3.append(yf[16])
+    y4.append(yf[21])
+
+    #plt.plot(xf, 2.0/S * np.abs(yf[0:S//2]), 'xr')
+    #plt.grid()
+    #plt.show()
 
 
-# Plot
-#plt.plot(xf, 2.0/N * np.abs(yf[0:N//2])) # plot FFT
-#plt.plot(x, y1) # plot d-FFT
-#plt.grid()
-#plt.show()
-
-"""
-Need to take this and figure out how to monitor
-electrode readings with time.
-
-I.E. How do I get back the input function from FFT?
-
-Take FFT at 1 kHz frequency...
-
-"""
+##### PLOT #####
+# x of plot d-FFT is...?
+X = [i*S for i in range(N/S)]
+plt.plot(X, y1, "r") # plot d-FFT
+plt.plot(X, y2, "g") # <--- The values aren't the same
+plt.plot(X, y3, "b")
+plt.plot(X, y4, "y")
+plt.grid()
+plt.show()
