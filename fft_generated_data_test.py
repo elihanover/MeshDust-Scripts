@@ -54,45 +54,31 @@ y = e1 * np.sin(af1 * 2 * np.pi * x) + e4 * np.sin(af2 * 2 * np.pi * x)
 # FFT Plot Data
 y1 = [] # V's at 40 Hz
 y2 = [] # V's at 80 Hz
-y3 = []
+y3 = [] # additional channels if wanted
 y4 = []
 
 for i in range(0, N, S): # assumes N%10 == 0
     xf = np.linspace(0.0, 1.0/(2.0*T), S//2)
-    print "len XF", len(xf)
 
     # Fast Fourier Transform
     yf = fft(y[i:i+S])
     yf = 2.0/S * np.abs(yf[0:S//2])
-    print len(yf)
+    
     # Get V values at each artificial frequency
-
     # TODO: calculate these values programmatically, besides the point for now
-
-
     y1.append(yf[10]) # get V value at af1
     y2.append(yf[20]) # get V value at af2
-
-    print y1[-1], y2[-1]
     
-    #y1.append(yf[0])
-    #y2.append(yf[1])
-    
-
-    #y3.append(yf[16])
-    #y4.append(yf[21])
-
-    if i < S*4:
+    # For testing purposes
+    if i < S:
       plt.plot(xf, yf, 'xr')
       plt.grid()
       plt.show()
 
 
-##### PLOT #####
+##### PLOT d-FFT #####
 t = [i*S*T for i in range(N/S)] # x-axis of plot d-FFT is time
-plt.plot(t, y1, "r") # plot d-FFT
-plt.plot(t, y2, "g") # <--- The values aren't the same
-#plt.plot(X, y3, "b")
-#plt.plot(X, y4, "y")
+plt.plot(t, y1, "r")
+plt.plot(t, y2, "g")
 plt.grid()
 plt.show()
