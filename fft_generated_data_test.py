@@ -5,9 +5,8 @@ import matplotlib.pyplot as plt
 """
 
 Next:
-- Figure out why d-FFT values make NO sense
 - Try with some noise, shouldn't do anything catastrophic
-- Run this with some real sensory data or fake spike data
+- Run this with some real sensory data or fake spike data, see if spikes are measured well
 - Update based on timing parameters of dust
 
 """
